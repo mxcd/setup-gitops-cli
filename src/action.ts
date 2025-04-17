@@ -19,7 +19,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Readable } from "stream";
 import { finished } from "stream/promises";
 
-const DEFAULT_VERSION = "2.2.2";
+const DEFAULT_VERSION = "2.2.3";
 const OWNER = "mxcd";
 const REPO = "gitops-cli";
 const BASE_DIR = join(homedir(), ".gitops-cli");
