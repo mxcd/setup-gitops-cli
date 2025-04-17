@@ -135,27 +135,34 @@ async function updateToolCache(
   await toolCache.cacheDir(BASE_DIR, "gitops-cli", version, `${os}-${arch}`);
 }
 
+export interface ReleaseAsset {
+  name: string;
+  url: string;
+}
+
+export interface GitHubRelease {
+  assets: ReleaseAsset[];
+}
+
+async function getRelease(version: string): Promise<GitHubRelease> {
+  const url = `https://api.github.com/repos/${OWNER}/${REPO}/releases/tags/${version}`;
+  const res = await fetch(url, {
+    headers: { Accept: "application/vnd.github.v3+json" },
+  });
+  if (!res.ok) throw new Error(`GitHub API returned ${res.status}`);
+  return res.json() as Promise<GitHubRelease>;
+}
+
 async function downloadBinary(
   version: string,
   binaryFileName: string,
 ): Promise<string> {
   info(`Downloading '${binaryFileName}' version '${version}'`);
   const downloadPath = `/tmp/${uuidv4()}`;
-  const octokit = github.getOctokit(process.env.GITHUB_TOKEN || "");
 
-  const release = await octokit.request(
-    "GET /repos/{owner}/{repo}/releases/tags/{tag}",
-    {
-      owner: OWNER,
-      repo: REPO,
-      tag: version,
-      headers: {
-        "X-GitHub-Api-Version": "2022-11-28",
-      },
-    },
-  );
+  const release = await getRelease(version);
 
-  const assets = release.data.assets;
+  const assets = release.assets;
   const asset = assets.find((asset) => asset.name == binaryFileName);
 
   const response = await fetch(asset.url, {
