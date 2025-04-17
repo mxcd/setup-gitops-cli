@@ -1,0 +1,11 @@
+name: Test Action Locally
+on: push
+jobs:
+  test-job:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run your custom action
+        uses: ./
+        with:
+          version: "2.2.2"

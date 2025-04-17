@@ -1,0 +1,39 @@
+{
+  "private": true,
+  "name": "setup-gitops-cli",
+  "version": "1.0.0",
+  "description": "Setup gitops cli for GitHub Actions.",
+  "keywords": [
+    "gitops-cli",
+    "actions",
+    "setup"
+  ],
+  "homepage": "https://github.com/mxcd/gitops-cli",
+  "main": "dist/index.js",
+  "repository": "git@github.com/mxcd/setup-gitops-cli.git",
+  "author": "maxpartenfelder@gmail.com",
+  "scripts": {
+    "format": "prettier --write src *.yml *.json *.md",
+    "build": "esbuild --target=node20 --outfile=dist/setup/index.js --bundle --minify --platform=node --format=cjs src/index.ts",
+    "start": "bun run build && node dist/setup/index.js"
+  },
+  "dependencies": {
+    "@actions/cache": "4.0.0",
+    "@actions/core": "^1.10.0",
+    "@actions/exec": "^1.1.1",
+    "@actions/github": "^6.0.0",
+    "@actions/glob": "0.5.0",
+    "@actions/io": "^1.1.2",
+    "@actions/tool-cache": "^2.0.1",
+    "uuid": "^11.0.4"
+  },
+  "devDependencies": {
+    "@types/node": "22.10.5",
+    "esbuild": "0.24.2",
+    "prettier": "3.4.2",
+    "typescript": "5.7.2"
+  },
+  "prettier": {
+    "quoteProps": "preserve"
+  }
+}
