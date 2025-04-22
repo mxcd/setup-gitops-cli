@@ -18,6 +18,7 @@ import { spawnSync } from "child_process";
 import { v4 as uuidv4 } from "uuid";
 import { Readable } from "stream";
 import { finished } from "stream/promises";
+import { log } from "node:console";
 
 const DEFAULT_VERSION = "2.2.3";
 const OWNER = "mxcd";
@@ -149,7 +150,11 @@ async function getRelease(version: string): Promise<GitHubRelease> {
   const res = await fetch(url, {
     headers: { Accept: "application/vnd.github.v3+json" },
   });
-  if (!res.ok) throw new Error(`GitHub API returned ${res.status}`);
+  if (!res.ok) {
+    const text = await res.text();
+    log(`GitHub API error: ${text}`);
+    throw new Error(`GitHub API returned ${res.status}`);
+  }
   return res.json() as Promise<GitHubRelease>;
 }
 
