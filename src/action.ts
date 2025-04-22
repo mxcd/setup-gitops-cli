@@ -38,6 +38,13 @@ export type Output = {
   cacheHit: boolean;
 };
 
+export type CacheState = {
+  cacheEnabled: boolean;
+  cacheHit: boolean;
+  gitopsPath: string;
+  url: string;
+};
+
 export default async (options: Input): Promise<Output> => {
   const version = options.version ?? DEFAULT_VERSION;
   const arch = options.arch ?? process.arch;
@@ -66,6 +73,8 @@ export default async (options: Input): Promise<Output> => {
           `Found a cached version of gitops: ${cachedVersion} (but it appears to be corrupted?)`,
         );
         cacheHit = false;
+      } else {
+        info(`Found a cached version of gitops: ${cachedVersion}`);
       }
     }
   }
@@ -133,6 +142,7 @@ async function updateToolCache(
   os: string,
   arch: string,
 ): Promise<void> {
+  info(`Storing gitops-cli version ${version} in the tool cache`);
   await toolCache.cacheDir(BASE_DIR, "gitops-cli", version, `${os}-${arch}`);
 }
 
@@ -165,12 +175,14 @@ async function downloadBinary(
   info(`Downloading '${binaryFileName}' version '${version}'`);
   const downloadPath = `/tmp/${uuidv4()}`;
 
-  const release = await getRelease(version);
+  // const release = await getRelease(version);
 
-  const assets = release.assets;
-  const asset = assets.find((asset) => asset.name == binaryFileName);
+  // const assets = release.assets;
+  // const asset = assets.find((asset) => asset.name == binaryFileName);
+  // const assetUrl = asset.url;
 
-  const response = await fetch(asset.url, {
+  const assetUrl = `https://github.com/mxcd/gitops-cli/releases/download/${version}/${binaryFileName}`;
+  const response = await fetch(assetUrl, {
     headers: {
       Accept: "application/octet-stream",
     },
